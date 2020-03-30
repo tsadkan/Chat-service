@@ -7,6 +7,8 @@ import { AuthMiddleware } from 'src/middlewares/auth.middleware';
 import { AuthController } from './auth/auth.controller';
 import { UserController } from './user/user.controller';
 import { JwtModule } from '@nestjs/jwt';
+import { ChatModule } from './chat/chat.module';
+import { RoomModule } from './room/room.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { JwtModule } from '@nestjs/jwt';
       useCreateIndex: true,
       useNewUrlParser: true
     }),
+    ChatModule,
+    RoomModule,
     AuthModule,
     UserModule
   ],

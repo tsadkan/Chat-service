@@ -37,7 +37,7 @@ export class AuthService {
         const isvalid = await this.validateUser(user, password);
         if(!isvalid) throw new BadRequestException('Invalid credintials');
 
-        const serializedUser = user.schema.methods.serialize(user);
+        const serializedUser = user     chema.methods.serialize(user);
         
         return this.generateToken(serializedUser, APP_CONFIG.accessTokenExpires, APP_CONFIG.refreshTokenExpires);
     }

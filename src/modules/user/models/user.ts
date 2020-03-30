@@ -1,7 +1,7 @@
 
 import * as mongoose from 'mongoose';
 
-export class User extends mongoose.Document {
+export interface User extends mongoose.Document {
     readonly _id: string;
     readonly name?: string;
     readonly email: string;
