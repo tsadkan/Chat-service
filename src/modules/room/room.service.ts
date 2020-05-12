@@ -21,8 +21,7 @@ export class RoomService {
   async addMessage(message: Message, id: string) {
     const room = await this.findById(id);
 
-    // recieve user from decoded token
-    message.user = message.user;
+    // TODO recieve user from decoded token
     room.messages.push(message);
 
     return await room.save();

@@ -4,18 +4,15 @@ import {
     WebSocketGateway,
     WebSocketServer,
     SubscribeMessage,
-    MessageBody,
-    ConnectedSocket
   } from '@nestjs/websockets';
 import { User } from '../user/models/user';
 import { JwtService } from '@nestjs/jwt';
 import { RoomService } from '../room/room.service';
 import { UseGuards } from '@nestjs/common';
 import { JwtWsStrategy } from '../auth/jwt-ws.strategy';
-import { Socket } from 'socket.io';
 
 @WebSocketGateway()
-// @UseGuards(JwtWsStrategy)
+@UseGuards(JwtWsStrategy)
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @WebSocketServer() server;
     connectedUsers: string[] = [];
@@ -50,39 +47,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.emit('users', this.connectedUsers);
     }
 
-    // @SubscribeMessage('message')
-    // async onMessage(client, data: any) {
-    //     await this.roomService.addMessage(data, 'room');
-    //     client.broadcast.to('room').emir('message', data);
+    @SubscribeMessage('message')
+    async onMessage(client, data: any) {
+        await this.roomService.addMessage(data, 'room');
+        client.broadcast.to('room').emir('message', data);
+    }
 
-
-    //     // return Observable.create(observer =>
-    //     //     observer.next({ event, data: result.message })
-    //     //     );
-    // }
-
-    // @SubscribeMessage('join')
-    // async onRoomJoin(client, data:any) {
-    //     console.log(client)
-
-    //     client.join(data[0]);
+    @SubscribeMessage('join')
+    async onRoomJoin(client, id:string) {
+        client.join(id);
         
-    //     const messages = await this.roomService.findWithLimit(data, 25);
+        const messages = await this.roomService.findWithLimit(id, 25);
 
-    //     // send latest 25 messages to the connected user
-    //     client.emit('message', messages);
-    // }
+        // send latest 25 messages to the connected user
+        client.emit('message', messages);
+    }
 
-    // @SubscribeMessage('leave')
-    // onRoomLeave(client, data: any): void {
-    //     client.leave(data[0]);
-    // }
+    @SubscribeMessage('leave')
+    onRoomLeave(client, id: string): void {
+        client.leave(id);
+    }
 
-    @SubscribeMessage('events')
-handleEvent(
-  @MessageBody() data: string,
-  @ConnectedSocket() client: Socket,
-): string {
-  return data;
-}
 }
